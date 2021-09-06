@@ -597,7 +597,10 @@ else
    LD = $(CXX)
 endif
 
-$(TARGET): $(OBJECTS)
+./../target/release/librecorder.a:
+	cargo build --release
+
+$(TARGET): ./../target/release/librecorder.a $(OBJECTS)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
@@ -617,4 +620,4 @@ clean:
 	@echo rm -f "*.d"
 	rm -f $(TARGET) $(TARGET_TMP)
 
-.PHONY: clean
+.PHONY: clean ./../target/release/librecorder.a
