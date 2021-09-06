@@ -52,6 +52,8 @@ retro_input_state_t dbg_input_state_cb = 0;
 #endif
 #endif /* HAVE_LIGHTREC */
 
+#include "recorder.h"
+
 //Fast Save States exclude string labels from variables in the savestate, and are at least 20% faster.
 extern bool FastSaveStates;
 const int DEFAULT_STATE_SIZE = 16 * 1024 * 1024;
@@ -3039,6 +3041,7 @@ static void fallback_log(enum retro_log_level level, const char *fmt, ...)
 
 void retro_init(void)
 {
+   recorder_init();
    struct retro_log_callback log;
    uint64_t serialization_quirks = RETRO_SERIALIZATION_QUIRK_CORE_VARIABLE_SIZE;
    unsigned dci_version          = 0;

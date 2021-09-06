@@ -5,7 +5,7 @@ HAVE_VULKAN = 0
 HAVE_JIT = 0
 HAVE_CHD = 1
 HAVE_CDROM = 0
-HAVE_LIGHTREC = 1
+HAVE_LIGHTREC = 0
 LINK_STATIC_LIBCPLUSPLUS = 1
 THREADED_RECOMPILER = 1
 LIGHTREC_DEBUG = 0
@@ -25,6 +25,9 @@ GIT_VERSION ?= " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
    FLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
+
+LDFLAGS += "./../target/release/librecorder.a"
+FLAGS += -I"./../recorder/include"
 
 ifeq ($(platform),)
    platform = unix
