@@ -751,8 +751,6 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 
    instr = ReadInstruction(timestamp, PC);
 
-//   recorder_instruction(PC, instr);
-
    // 
    // Instruction decode
    //
