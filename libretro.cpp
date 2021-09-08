@@ -4601,6 +4601,8 @@ void retro_run(void)
    GPU_StartFrame(espec);
 
    Running = -1;
+
+   recorder_frame();
    timestamp = PSX_CPU->Run(timestamp, false, false);
 
    assert(timestamp);

@@ -27,7 +27,7 @@ ifneq ($(GIT_VERSION)," unknown")
 endif
 
 LDFLAGS += "./../target/release/librecorder.a"
-FLAGS += -I"./../recorder/include"
+FLAGS += -I"./../include"
 
 ifeq ($(platform),)
    platform = unix
@@ -597,10 +597,15 @@ else
    LD = $(CXX)
 endif
 
-./../target/release/librecorder.a:
+LIB_RECORDER := $(abspath ./../target/release/librecorder.a)
+LIB_RECORDER_D := $(abspath ./../target/release/librecorder.d)
+
+LIB_RECORDER:
 	cargo build --release
 
-$(TARGET): ./../target/release/librecorder.a $(OBJECTS)
+include $(LIB_RECORDER_D)
+
+$(TARGET): $(OBJECTS) $(LIB_RECORDER)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
@@ -620,4 +625,4 @@ clean:
 	@echo rm -f "*.d"
 	rm -f $(TARGET) $(TARGET_TMP)
 
-.PHONY: clean ./../target/release/librecorder.a
+.PHONY: clean

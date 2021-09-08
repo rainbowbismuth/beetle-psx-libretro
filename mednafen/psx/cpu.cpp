@@ -641,6 +641,9 @@ uint32 NO_INLINE PS_CPU::Exception(uint32 code, uint32 PC, const uint32 NP, cons
  CP0.CAUSE |= BDBT << 30;
  CP0.CAUSE |= (instr << 2) & (0x3 << 28);	// CE
 
+
+ recorder_exception(PC, instr, NP, handler, code);
+
  //
  //
  //
@@ -748,6 +751,7 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 
    instr = ReadInstruction(timestamp, PC);
 
+//   recorder_instruction(PC, instr);
 
    // 
    // Instruction decode
