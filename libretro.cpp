@@ -4818,6 +4818,11 @@ void retro_run(void)
 
    if ((video_frames & 0xFF) == 0) {
      recorder_screenshot((const uint8_t *)fb, width, height, pitch);
+     static uint8_t buf[DEFAULT_STATE_SIZE] = {0};
+     memset(&buf, 0, DEFAULT_STATE_SIZE);
+     if (retro_serialize(&buf, DEFAULT_STATE_SIZE)) {
+       recorder_save_state((const uint8_t*)&buf, DEFAULT_STATE_SIZE);
+     }
    }
 
    audio_frames += spec.SoundBufSize;
