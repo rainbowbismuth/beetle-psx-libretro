@@ -4789,6 +4789,7 @@ void retro_run(void)
 
    int16_t *interbuf = (int16_t*)&IntermediateBuffer;
 
+   uint32_t pitch = MEDNAFEN_CORE_GEOMETRY_MAX_W << (2 + upscale_shift);
    if (gui_show)
    {
       if (!gui_inited)
@@ -4810,11 +4811,15 @@ void retro_run(void)
    }
    else
    {
-      rsx_intf_finalize_frame(fb, width, height,
-            MEDNAFEN_CORE_GEOMETRY_MAX_W << (2 + upscale_shift));
+      rsx_intf_finalize_frame(fb, width, height, pitch);
    }
 
    video_frames++;
+
+   if ((video_frames & 0xFF) == 0) {
+     recorder_screenshot((const uint8_t *)fb, width, height, pitch);
+   }
+
    audio_frames += spec.SoundBufSize;
 
    audio_batch_cb(interbuf, spec.SoundBufSize);
