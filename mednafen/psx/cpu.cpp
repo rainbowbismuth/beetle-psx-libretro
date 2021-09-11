@@ -766,6 +766,8 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
    else
     timestamp++;
 
+   recorder_instruction(PC, instr);
+
    #define DO_LDS() { GPR[LDWhich] = LDValue; ReadAbsorb[LDWhich] = LDAbsorb; ReadFudge = LDWhich; ReadAbsorbWhich |= LDWhich & 0x1F; LDWhich = 0x20; }
    #define BEGIN_OPF(name) { op_##name:
    #define END_OPF goto OpDone; }
