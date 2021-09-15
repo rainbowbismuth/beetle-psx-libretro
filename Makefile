@@ -605,6 +605,10 @@ LIB_EMULATOR:
 
 include $(LIB_EMULATOR_D)
 
+ifeq ($(platform), osx)
+	LDFLAGS += -framework CoreServices
+endif
+
 $(TARGET): $(OBJECTS) $(LIB_EMULATOR)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
