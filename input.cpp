@@ -6,6 +6,7 @@
 #include "mednafen/psx/frontio.h"
 #include "input.h"
 #include "beetle_psx_globals.h"
+#include "recorder.h"
 
 //------------------------------------------------------------------------------
 // Locals
@@ -1057,6 +1058,7 @@ void input_update(bool libretro_supports_bitmasks, retro_input_state_t input_sta
 
       } // can we rumble?
 
+      recorder_mednafen_input((uint32_t)iplayer, p_input);
    } // for each player
 }
 
