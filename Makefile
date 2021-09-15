@@ -597,15 +597,15 @@ else
    LD = $(CXX)
 endif
 
-LIB_RECORDER := $(abspath ./../target/release/librecorder.a)
-LIB_RECORDER_D := $(abspath ./../target/release/librecorder.d)
+LIB_EMULATOR := $(abspath ./../target/release/libemulator.a)
+LIB_EMULATOR_D := $(abspath ./../target/release/libemulator.d)
 
-LIB_RECORDER:
+LIB_EMULATOR:
 	cargo build --release
 
-include $(LIB_RECORDER_D)
+include $(LIB_EMULATOR_D)
 
-$(TARGET): $(OBJECTS) $(LIB_RECORDER)
+$(TARGET): $(OBJECTS) $(LIB_EMULATOR)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else

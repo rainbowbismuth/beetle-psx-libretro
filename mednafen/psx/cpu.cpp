@@ -608,7 +608,7 @@ INLINE uint32 PS_CPU::ReadInstruction(pscpu_timestamp_t &timestamp, uint32 addre
    instr = ICache[(address & 0xFFC) >> 2].Data;
   }
  }
-
+ recorder_instruction_overlay(address, &instr);
  return instr;
 }
 
