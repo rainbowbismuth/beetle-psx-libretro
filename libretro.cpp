@@ -5025,10 +5025,13 @@ bool retro_unserialize(const void *data, size_t size)
    st.len            = size;
    st.malloced       = 0;
    st.initial_malloc = 0;
-
+   
    //fast save states are at least 20% faster
    FastSaveStates = UsingFastSavestates();
    bool okay = MDFNSS_LoadSM(&st, 0, 0);
+   if (okay) {
+     recorder_save_state((const uint8_t*)data, size);
+   }
    FastSaveStates = false;
    return okay;
 }
