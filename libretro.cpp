@@ -4369,6 +4369,12 @@ static uint64_t video_frames, audio_frames;
 
 void retro_run(void)
 {
+   const uint8 * replay_save_state = 0;
+   uint32 length = 0;
+   if (recorder_replay_load(&replay_save_state, &length)) {
+     retro_unserialize(replay_save_state, length);
+   }
+
    bool updated = false;
    //code to implement audio and video disable is not yet implemented
    //bool disableVideo = false;
@@ -4816,9 +4822,17 @@ void retro_run(void)
 
    video_frames++;
 
+   static uint8_t buf[DEFAULT_STATE_SIZE] = {0};
+   if (recorder_replay_finished()) {
+     memset(&buf, 0, DEFAULT_STATE_SIZE);
+     if (retro_serialize(&buf, DEFAULT_STATE_SIZE)) {
+       recorder_replay_save_state_check((const uint8_t*)&buf, DEFAULT_STATE_SIZE);
+     }
+   }
+
    if ((video_frames & 0xFF) == 0) {
      recorder_screenshot((const uint8_t *)fb, width, height, pitch);
-     static uint8_t buf[DEFAULT_STATE_SIZE] = {0};
+
      memset(&buf, 0, DEFAULT_STATE_SIZE);
      if (retro_serialize(&buf, DEFAULT_STATE_SIZE)) {
        recorder_save_state((const uint8_t*)&buf, DEFAULT_STATE_SIZE);
@@ -5031,6 +5045,8 @@ bool retro_unserialize(const void *data, size_t size)
    bool okay = MDFNSS_LoadSM(&st, 0, 0);
    if (okay) {
      recorder_save_state((const uint8_t*)data, size);
+   } else {
+     printf("[Mednafen] failed to deserialize save state\n");
    }
    FastSaveStates = false;
    return okay;
