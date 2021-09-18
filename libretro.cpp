@@ -4822,17 +4822,12 @@ void retro_run(void)
 
    video_frames++;
 
-   static uint8_t buf[DEFAULT_STATE_SIZE] = {0};
-   if (recorder_replay_finished()) {
-     memset(&buf, 0, DEFAULT_STATE_SIZE);
-     if (retro_serialize(&buf, DEFAULT_STATE_SIZE)) {
-       recorder_replay_save_state_check((const uint8_t*)&buf, DEFAULT_STATE_SIZE);
-     }
+   if (recorder_should_submit_screenshot()) {
+     recorder_screenshot((const uint8_t *)fb, width, height, pitch);
    }
 
-   if ((video_frames & 0xFF) == 0) {
-     recorder_screenshot((const uint8_t *)fb, width, height, pitch);
-
+   static uint8_t buf[DEFAULT_STATE_SIZE] = {0};
+   if (recorder_should_submit_save_state()) {
      memset(&buf, 0, DEFAULT_STATE_SIZE);
      if (retro_serialize(&buf, DEFAULT_STATE_SIZE)) {
        recorder_save_state((const uint8_t*)&buf, DEFAULT_STATE_SIZE);
