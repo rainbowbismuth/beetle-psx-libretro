@@ -4608,7 +4608,7 @@ void retro_run(void)
 
    Running = -1;
 
-   recorder_frame();
+   recorder_frame_start();
    timestamp = PSX_CPU->Run(timestamp, false, false);
 
    assert(timestamp);
@@ -4833,6 +4833,8 @@ void retro_run(void)
        recorder_save_state((const uint8_t*)&buf, DEFAULT_STATE_SIZE);
      }
    }
+
+   recorder_frame_end();
 
    audio_frames += spec.SoundBufSize;
 
