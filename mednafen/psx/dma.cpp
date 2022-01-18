@@ -19,6 +19,7 @@
 #include "mdec.h"
 #include "cdc.h"
 #include "spu.h"
+#include "recorder.h"
 
 #include "../state_helpers.h"
 
@@ -440,7 +441,9 @@ static INLINE void RunChannel(int32_t timestamp, int32_t clocks, int ch)
 
             if(!(CRModeCache & 0x1))
             {
-               MainRAM->WriteU32((DMACH[ch].CurAddr + (voffs << 2)) & 0x1FFFFC, vtmp);
+               uint32_t dma_addr = (DMACH[ch].CurAddr + (voffs << 2)) & 0x1FFFFC;
+               MainRAM->WriteU32(dma_addr, vtmp);
+               recorder_main_ram_dma_write(dma_addr);
 #ifdef HAVE_LIGHTREC
                PSX_CPU->lightrec_plugin_clear((DMACH[ch].CurAddr + (voffs << 2)) & 0x1FFFFC, 1);
 #endif
