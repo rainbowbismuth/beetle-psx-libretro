@@ -2047,6 +2047,7 @@ static void InitCommon(std::vector<CDIF *> *_CDInterfaces, const bool EmulateMem
       ScratchRAM = new MultiAccessSizeMem<1024, uint32, false>();
       BIOSROM = new MultiAccessSizeMem<512 * 1024, uint32, false>();
    }
+   recorder_set_main_ram(MainRAM->data8);
 
    PIOMem  = NULL;
 
@@ -3041,7 +3042,7 @@ static void fallback_log(enum retro_log_level level, const char *fmt, ...)
 
 void retro_init(void)
 {
-   recorder_init(MainRAM->data8);
+   recorder_init();
    struct retro_log_callback log;
    uint64_t serialization_quirks = RETRO_SERIALIZATION_QUIRK_CORE_VARIABLE_SIZE;
    unsigned dci_version          = 0;
