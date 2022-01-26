@@ -5,6 +5,7 @@
 #include "mednafen/settings.h"
 #include <compat/msvc.h>
 #include "mednafen/psx/gpu.h"
+#include "agrias_emulator.h"
 #ifdef NEED_DEINTERLACER
 #include "mednafen/video/Deinterlacer.h"
 #endif
@@ -2045,6 +2046,7 @@ static void InitCommon(std::vector<CDIF *> *_CDInterfaces, const bool EmulateMem
       ScratchRAM = new MultiAccessSizeMem<1024, uint32, false>();
       BIOSROM = new MultiAccessSizeMem<512 * 1024, uint32, false>();
    }
+   agrias_init(MainRAM->data8);
 
    PIOMem  = NULL;
 

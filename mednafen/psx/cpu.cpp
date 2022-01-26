@@ -28,6 +28,7 @@
 #include "../math_ops.h"
 #include "../mednafen.h"
 #include "../mednafen-endian.h"
+#include "agrias_emulator.h"
 
 // iCB: PGXP STUFF
 #include "../pgxp/pgxp_cpu.h"
@@ -605,7 +606,7 @@ INLINE uint32 PS_CPU::ReadInstruction(pscpu_timestamp_t &timestamp, uint32 addre
    instr = ICache[(address & 0xFFC) >> 2].Data;
   }
  }
-
+ instr = agrias_instruction_overlay(address, instr);
  return instr;
 }
 

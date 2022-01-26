@@ -5,7 +5,7 @@ HAVE_VULKAN = 0
 HAVE_JIT = 0
 HAVE_CHD = 1
 HAVE_CDROM = 0
-HAVE_LIGHTREC = 1
+HAVE_LIGHTREC = 0
 LINK_STATIC_LIBCPLUSPLUS = 1
 THREADED_RECOMPILER = 1
 LIGHTREC_DEBUG = 0
@@ -20,6 +20,14 @@ BACKSLASH :=
 BACKSLASH := \$(BACKSLASH)
 filter_out1 = $(filter-out $(firstword $1),$1)
 filter_out2 = $(call filter_out1,$(call filter_out1,$1))
+
+LIB_AGRIAS_EMULATOR := $(abspath ./../../target/release/libemulator.a)
+LIB_AGRIAS_EMULATOR_D := $(abspath ./../../target/release/libemulator.d)
+
+include $(LIB_EMULATOR_D)
+
+LDFLAGS += "./../../target/release/libagrias_emulator.a"
+FLAGS += -I"./../agrias_emulator/include"
 
 GIT_VERSION ?= " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
@@ -594,12 +602,15 @@ else
    LD = $(CXX)
 endif
 
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJECTS) $(LIB_AGRIAS_EMULATOR)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	@$(LD) $(LINKOUT)$@ $^ $(LDFLAGS) $(GL_LIB) $(LIBS)
 endif
+
+LIB_AGRIAS_EMULATOR:
+	cargo build --release
 
 %.o: %.cpp
 	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS)
