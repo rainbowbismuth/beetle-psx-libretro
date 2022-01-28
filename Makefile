@@ -21,8 +21,8 @@ BACKSLASH := \$(BACKSLASH)
 filter_out1 = $(filter-out $(firstword $1),$1)
 filter_out2 = $(call filter_out1,$(call filter_out1,$1))
 
-LIB_AGRIAS_EMULATOR := $(abspath ./../../target/release/libemulator.a)
-LIB_AGRIAS_EMULATOR_D := $(abspath ./../../target/release/libemulator.d)
+LIB_AGRIAS_EMULATOR := $(abspath ./../../target/release/libagrias_emulator.a)
+LIB_AGRIAS_EMULATOR_D := $(abspath ./../../target/release/libagrias_emulator.d)
 
 include $(LIB_EMULATOR_D)
 
