@@ -4368,6 +4368,7 @@ static uint64_t video_frames, audio_frames;
 
 void retro_run(void)
 {
+   agrias_tick();
    bool updated = false;
    //code to implement audio and video disable is not yet implemented
    //bool disableVideo = false;

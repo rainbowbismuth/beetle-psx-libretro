@@ -138,7 +138,7 @@ else ifeq ($(platform), osx)
    TARGET  := $(TARGET_NAME)_libretro.dylib
    fpic    := -fPIC
    SHARED  := -dynamiclib
-   LDFLAGS += $(PTHREAD_FLAGS)
+   LDFLAGS += $(PTHREAD_FLAGS) -framework CoreServices
    FLAGS   += $(PTHREAD_FLAGS)
    ifeq ($(arch),ppc)
       ENDIANNESS_DEFINES := -DMSB_FIRST
