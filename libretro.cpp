@@ -4369,6 +4369,12 @@ static uint64_t video_frames, audio_frames;
 void retro_run(void)
 {
    agrias_start_frame();
+   const uint8 * replay_save_state = 0;
+   uint32 length = 0;
+   if (agrias_replay_load(&replay_save_state, &length)) {
+     retro_unserialize(replay_save_state, length);
+   }
+
    bool updated = false;
    //code to implement audio and video disable is not yet implemented
    //bool disableVideo = false;
