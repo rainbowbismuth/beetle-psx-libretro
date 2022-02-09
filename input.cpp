@@ -2,6 +2,7 @@
 #include "mednafen/mednafen-types.h"
 #include <math.h>
 #include <algorithm>
+#include <agrias_emulator.h>
 #include "mednafen/git.h"
 #include "mednafen/psx/frontio.h"
 #include "input.h"
@@ -1056,7 +1057,7 @@ void input_update(bool libretro_supports_bitmasks, retro_input_state_t input_sta
          } // switch ( input_type[ iplayer ] )
 
       } // can we rumble?
-
+      agrias_psx_pad_input((uint16_t)iplayer, &p_input->buttons);
    } // for each player
 }
 

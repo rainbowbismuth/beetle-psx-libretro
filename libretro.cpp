@@ -4368,7 +4368,7 @@ static uint64_t video_frames, audio_frames;
 
 void retro_run(void)
 {
-   agrias_tick();
+   agrias_start_frame();
    bool updated = false;
    //code to implement audio and video disable is not yet implemented
    //bool disableVideo = false;
@@ -4787,6 +4787,7 @@ void retro_run(void)
 
    int16_t *interbuf = (int16_t*)&IntermediateBuffer;
 
+   uint32_t pitch = MEDNAFEN_CORE_GEOMETRY_MAX_W << (2 + upscale_shift);
    if (gui_show)
    {
       if (!gui_inited)
@@ -4808,11 +4809,23 @@ void retro_run(void)
    }
    else
    {
-      rsx_intf_finalize_frame(fb, width, height,
-            MEDNAFEN_CORE_GEOMETRY_MAX_W << (2 + upscale_shift));
+      rsx_intf_finalize_frame(fb, width, height, pitch);
    }
 
    video_frames++;
+
+   if (agrias_should_submit_screenshot()) {
+     agrias_screenshot_bgra8((const uint8_t *)fb, width, height, pitch);
+   }
+
+   static uint8_t buf[DEFAULT_STATE_SIZE] = {0};
+   if (agrias_should_submit_save_state()) {
+     memset(&buf, 0, DEFAULT_STATE_SIZE);
+     if (retro_serialize(&buf, DEFAULT_STATE_SIZE)) {
+       agrias_save_state((const uint8_t*)&buf, 4*1024*1024);
+     }
+   }
+
    audio_frames += spec.SoundBufSize;
 
    audio_batch_cb(interbuf, spec.SoundBufSize);
@@ -4823,6 +4836,8 @@ void retro_run(void)
       GPU_set_display_change_count(0);
       GPU_set_display_possibly_dirty(false);
    }
+
+   agrias_end_frame();
 }
 
 void retro_get_system_info(struct retro_system_info *info)
