@@ -645,7 +645,7 @@ uint32 NO_INLINE PS_CPU::Exception(uint32 code, uint32 PC, const uint32 NP, cons
  RecalcIPCache();
 
  BDBT = 0;
-
+ agrias_psx_exception(PC, instr, NP, handler, code);
  return(handler);
 }
 
@@ -807,7 +807,7 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	  BDBT = 3;						\
      DEBUG_ADDBT() \
 	 }							\
-								\
+	 agrias_psx_branch(old_PC, instr, new_PC);	        \
 	 goto SkipNPCStuff;					\
 	}
 
@@ -2392,7 +2392,7 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	uint32 address = GPR[rs] + immediate;
 
 	WriteMemory<uint8>(timestamp, address, GPR[rt]);
-
+        agrias_psx_store(PC, instr, address, GPR[rt]);
 	if (PGXP_GetModes() & PGXP_MODE_MEMORY)
 		PGXP_CPU_SB(instr, GPR[rt], address);
 
@@ -2417,8 +2417,10 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	 CP0.BADA = address;
 	 new_PC = Exception(EXCEPTION_ADES, PC, new_PC, instr);
 	}
-	else
-	 WriteMemory<uint16>(timestamp, address, GPR[rt]);
+	else {
+          WriteMemory<uint16>(timestamp, address, GPR[rt]);
+          agrias_psx_store(PC, instr, address, GPR[rt]);
+        }
 
 	if (PGXP_GetModes() & PGXP_MODE_MEMORY)
 		PGXP_CPU_SH(instr, GPR[rt], address);
@@ -2444,8 +2446,10 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	 CP0.BADA = address;
 	 new_PC = Exception(EXCEPTION_ADES, PC, new_PC, instr);
 	}
-	else
-	 WriteMemory<uint32>(timestamp, address, GPR[rt]);
+	else {
+          WriteMemory<uint32>(timestamp, address, GPR[rt]);
+          agrias_psx_store(PC, instr, address, GPR[rt]);
+        }
 
 	if (PGXP_GetModes() & PGXP_MODE_MEMORY)
 		PGXP_CPU_SW(instr, GPR[rt], address);
@@ -2494,7 +2498,7 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	 case 3: LDValue = (v & ~(0xFFFFFFFF << 0)) | (ReadMemory<uint32>(timestamp, address & ~3) << 0);
 		 break;
 	}
-
+        agrias_psx_load(PC, instr, address, LDValue);
         if (PGXP_GetModes() & PGXP_MODE_MEMORY)
 	   PGXP_CPU_LWL(instr, LDValue, address);
 
@@ -2512,21 +2516,26 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	GPR_DEPRES_END
 
         uint32 address = GPR[rs] + immediate;
-
+        uint32 value = 0;
 	switch(address & 0x3)
 	{
-	 case 0: WriteMemory<uint8>(timestamp, address & ~3, GPR[rt] >> 24);
+	 case 0: value = GPR[rt] >> 24;
+                 WriteMemory<uint8>(timestamp, address & ~3, value);
 		 break;
 
-	 case 1: WriteMemory<uint16>(timestamp, address & ~3, GPR[rt] >> 16);
+	 case 1: value = GPR[rt] >> 16;
+                 WriteMemory<uint16>(timestamp, address & ~3, value);
 	         break;
 
-	 case 2: WriteMemory<uint32>(timestamp, address & ~3, GPR[rt] >> 8, true);
+	 case 2: value = GPR[rt] >> 8;
+                 WriteMemory<uint32>(timestamp, address & ~3, value, true);
 		 break;
 
-	 case 3: WriteMemory<uint32>(timestamp, address & ~3, GPR[rt] >> 0);
+	 case 3: value = GPR[rt] >> 0;
+                 WriteMemory<uint32>(timestamp, address & ~3, value);
 		 break;
 	}
+        agrias_psx_store(PC, instr, address, value);
         if (PGXP_GetModes() & PGXP_MODE_MEMORY)
 	   PGXP_CPU_SWL(instr, GPR[rt], address);
 
@@ -2573,7 +2582,7 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	 case 3: LDValue = (v & ~(0xFF)) | ReadMemory<uint8>(timestamp, address);
 		 break;
 	}
-
+        agrias_psx_load(PC, instr, address, LDValue);
         if (PGXP_GetModes() & PGXP_MODE_MEMORY)
 	   PGXP_CPU_LWR(instr, LDValue, address);
 
@@ -2591,22 +2600,27 @@ pscpu_timestamp_t PS_CPU::RunReal(pscpu_timestamp_t timestamp_in)
 	GPR_DEPRES_END
 
         uint32 address = GPR[rs] + immediate;
-
+        uint32 value = 0;
 	switch(address & 0x3)
 	{
-	 case 0: WriteMemory<uint32>(timestamp, address, GPR[rt]);
+	 case 0: value = GPR[rt] >> 0;
+                 WriteMemory<uint32>(timestamp, address, GPR[rt]);
 		 break;
 
-	 case 1: WriteMemory<uint32>(timestamp, address, GPR[rt], true);
+	 case 1: value = GPR[rt] >> 8;
+                 WriteMemory<uint32>(timestamp, address, GPR[rt], true);
 		 break;
 
-	 case 2: WriteMemory<uint16>(timestamp, address, GPR[rt]);
+	 case 2: value = GPR[rt] >> 16;
+                 WriteMemory<uint16>(timestamp, address, GPR[rt]);
 	         break;
 
-	 case 3: WriteMemory<uint8>(timestamp, address, GPR[rt]);
+	 case 3: value = GPR[rt] >> 24;
+                 WriteMemory<uint8>(timestamp, address, GPR[rt]);
 		 break;
 	}
-
+        // TODO: I think this is correct?
+        agrias_psx_store(PC, instr, address, value);
         if (PGXP_GetModes() & PGXP_MODE_MEMORY)
 		PGXP_CPU_SWR(instr, GPR[rt], address);
 

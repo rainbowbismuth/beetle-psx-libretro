@@ -291,6 +291,7 @@ static INLINE void ChRW(const unsigned ch, const uint32_t CRModeCache, const uin
          break;
    }
 
+   agrias_psx_dma_rw(ch, CRModeCache, addr, *V);
    // GROSS APPROXIMATION, shoehorning multiple effects together, TODO separate(especially SPU and CDC)
    DMACH[ch].ClockCounter -= std::max<int>(extra_cyc_overhead, (CRModeCache & 0x100) ? 7 : 0);
 }
